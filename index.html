@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL Link Storage App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f0f4f8;
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: white;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .link-title {
+      flex: 1;
+      margin-right: 10px;
+    }
+    .link-actions button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔗 URL Link Storage</h2>
+
+  <input type="text" id="title" placeholder="Enter title" />
+  <input type="url" id="url" placeholder="Enter URL (e.g. https://...)" />
+  <button onclick="addLink()">Save Link</button>
+
+  <ul id="linkList"></ul>
+
+  <script>
+    const linkList = document.getElementById('linkList');
+    let links = JSON.parse(localStorage.getItem('savedLinks')) || [];
+
+    function renderLinks() {
+      linkList.innerHTML = '';
+      links.forEach((link, index) => {
+        const li = document.createElement('li');
+
+        const title = document.createElement('span');
+        title.className = 'link-title';
+        title.textContent = `${link.title} - ${link.url}`;
+
+        const actions = document.createElement('span');
+        actions.className = 'link-actions';
+
+        const openBtn = document.createElement('button');
+        openBtn.textContent = 'Open';
+        openBtn.onclick = () => window.open(link.url, '_blank');
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '❌';
+        deleteBtn.onclick = () => deleteLink(index);
+
+        actions.appendChild(openBtn);
+        actions.appendChild(deleteBtn);
+
+        li.appendChild(title);
+        li.appendChild(actions);
+        linkList.appendChild(li);
+      });
+    }
+
+    function addLink() {
+      const titleInput = document.getElementById('title').value.trim();
+      const urlInput = document.getElementById('url').value.trim();
+
+      if (!titleInput || !urlInput) {
+        alert('Please enter both title and URL.');
+        return;
+      }
+
+      links.push({ title: titleInput, url: urlInput });
+      localStorage.setItem('savedLinks', JSON.stringify(links));
+      document.getElementById('title').value = '';
+      document.getElementById('url').value = '';
+      renderLinks();
+    }
+
+    function deleteLink(index) {
+      links.splice(index, 1);
+      localStorage.setItem('savedLinks', JSON.stringify(links));
+      renderLinks();
+    }
+
+    renderLinks();
+  </script>
+</body>
+</html>
